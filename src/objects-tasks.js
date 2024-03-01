@@ -52,17 +52,10 @@ function mergeObjects(/* objects */) {
  *
  */
 function removeProperties(obj, keys) {
-  const res = {};
-  Object.keys(obj)
-    .filter((k) => !keys.includes(k))
-    .forEach((k) => {
-      const { [k]: removeProperty } = obj;
-      Object.assign(res, { [k]: removeProperty });
-    });
+  const res = { ...obj };
+  keys.forEach((k) => delete res[k]);
   return res;
 }
-
-removeProperties({ a: 1, b: 2, c: 3 }, ['b', 'c']);
 
 /**
  * Compares two source objects. Returns true if the objects are equal and false otherwise.
