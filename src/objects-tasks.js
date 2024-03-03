@@ -174,8 +174,6 @@ function sellTickets(queue) {
   return count >= 0;
 }
 
-// console.log('🚀:', sellTickets([25, 25, 50, 25, 25, 25, 100]));
-
 /**
  * Returns the rectangle object with width and height parameters and getArea() method
  *
@@ -222,8 +220,16 @@ function getJSON(obj) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const data = JSON.parse(json);
+  const obj = Object.create(proto);
+
+  Object.keys(data).forEach((k) => {
+    obj[k] = data[k];
+    return obj;
+  });
+
+  return obj;
 }
 
 /**
