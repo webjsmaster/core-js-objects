@@ -376,65 +376,77 @@ function group(array, keySelector, valueSelector) {
  */
 
 const cssSelectorBuilder = {
-  el: '',
-  resId: '',
+  result: '',
+
   element(value) {
-    this.el = value;
-    return this;
+    this.checkError(1);
+    const obj = Object.create(cssSelectorBuilder);
+    obj.result = this.result + value;
+    obj.indexError = 1;
+    return obj;
   },
 
   id(value) {
-    this.resId = value;
-    return this;
+    this.checkError(2);
+    const obj = Object.create(cssSelectorBuilder);
+    obj.result = `${this.result}#${value}`;
+    obj.indexError = 2;
+    return obj;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    this.checkError(3);
+    const obj = Object.create(cssSelectorBuilder);
+    obj.result = `${this.result}.${value}`;
+    obj.indexError = 3;
+    return obj;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.checkError(4);
+    const obj = Object.create(cssSelectorBuilder);
+    obj.result = `${this.result}[${value}]`;
+    obj.indexError = 4;
+    return obj;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    this.checkError(5);
+    const obj = Object.create(cssSelectorBuilder);
+    obj.result = `${this.result}:${value}`;
+    obj.indexError = 5;
+    return obj;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.checkError(6);
+    const obj = Object.create(cssSelectorBuilder);
+    obj.result = `${this.result}::${value}`;
+    obj.indexError = 6;
+    return obj;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    const obj = Object.create(cssSelectorBuilder);
+    obj.result = `${selector1.result} ${combinator} ${selector2.result}`;
+    return obj;
   },
 
   stringify() {
-    return `${this.el}.${this.resId}`;
+    return this.result;
+  },
+
+  checkError(i) {
+    if (this.indexError > i)
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
+      );
+    if (this.indexError === i && (i === 1 || i === 2 || i === 6))
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector'
+      );
   },
 };
-
-// const builder = cssSelectorBuilder;
-
-// console.log('⛔:', builder.id('main').element('el').stringify());
-
-// console.log(
-//   '🍄:',
-//   builder
-//     .combine(
-//       builder.element('div').id('main'),
-//       '+',
-//       builder.combine(
-//         builder.element('table').id('data'),
-//         '~',
-//         builder.combine(
-//           builder.element('tr').id('nth-of-type(even)'),
-//           ' ',
-//           builder.element('td').id('nth-of-type(even)')
-//         )
-//       )
-//     )
-//     .stringify()
-// );
 
 module.exports = {
   shallowCopy,
